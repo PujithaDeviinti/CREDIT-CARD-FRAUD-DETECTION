@@ -1,0 +1,57 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report,confusion_matrix
+# Load the dataset
+df = pd.read_csv('fraudTest.csv')
+# Check the first few rows of the dataset
+print(df)
+
+df = df.drop(columns=['Unnamed: 0','trans_date_trans_time','lat','long','dob'])
+# Encode categorical variables
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['category'] = le.fit_transform(df['category'])
+df['job'] = le.fit_transform(df['job'])
+df['merchant'] = le.fit_transform(df['merchant'])
+df['gender'] = le.fit_transform(df['gender'])
+df['first'] = le.fit_transform(df['first'])
+df['last'] = le.fit_transform(df['last'])
+df['street'] = le.fit_transform(df['street'])
+df['city'] = le.fit_transform(df['city'])
+df['state'] = le.fit_transform(df['state'])
+df['trans_num'] = le.fit_transform(df['trans_num'])
+X = df.drop('is_fraud', axis=1) # Assuming 'isFraud' is the target variable
+y = df['is_fraud']
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+test_size=0.2, random_state=42)
+#logistic regression
+log_reg = LogisticRegression(max_iter=1000)
+log_reg.fit(X_train, y_train)
+y_pred_log_reg = log_reg.predict(X_test)
+print("Logistic Regression Classifier:")
+print(confusion_matrix(y_test, y_pred_log_reg))
+print(classification_report(y_test, y_pred_log_reg))
+print("Accuracy:", accuracy_score(y_test, y_pred_log_reg))
+
+#decision tree
+tree_clf = DecisionTreeClassifier()
+tree_clf.fit(X_train, y_train)
+y_pred_tree = tree_clf.predict(X_test)
+print("Decision Tree Classifier:")
+print(confusion_matrix(y_test, y_pred_tree))
+print(classification_report(y_test, y_pred_tree))
+print("Accuracy:", accuracy_score(y_test, y_pred_tree))
+
+#random forest
+rf_clf = RandomForestClassifier()
+rf_clf.fit(X_train, y_train)
+y_pred_rf = rf_clf.predict(X_test)
+print("Random Forest Classifier:")
+print(confusion_matrix(y_test, y_pred_rf))
+print(classification_report(y_test, y_pred_rf))
+print("Accuracy:", accuracy_score(y_test, y_pred_rf))
